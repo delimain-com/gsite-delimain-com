@@ -1,0 +1,40 @@
+@use "reset.css" as reset;
+@use "bootstrap/dist/css/bootstrap.min.css" as bootstrap;
+//@use "bootstrap/scss/bootstrap.scss";
+@use "font-awesome/css/font-awesome.min.css" as font-awesome;
+
+.space-0 {
+	margin: 0;
+	padding: 0;
+}
+
+.card {
+	//@extend .h-100;
+	//.card-header {
+	//	@extend .p-1;
+	//	@extend .px-2;
+	//}
+	//.card-body {
+	//	@extend .h-100;
+	//	@extend .p-1;
+	//}
+}
+
+.table-responsive {
+	table {
+		@extend .table;
+		@extend .table-sm;
+		@extend .table-hover;
+		@extend .table-bordered;
+	}
+}
+
+.cursor-pointer{
+	cursor: pointer;
+}
+.cursor-move{
+	cursor: move;
+}
+.fa.fa-hover:hover {
+	transform: scale(1.5);
+}

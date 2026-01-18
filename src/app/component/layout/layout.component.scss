@@ -1,0 +1,66 @@
+:host {
+	display: block;
+	width: 100%;
+	height: 100vh;
+}
+
+.layout-container {
+	display: grid;
+	// 左カラムを 250px 固定、右を残り全域に設定
+	grid-template-columns: 250px 1fr;
+	height: 100%;
+	width: 100%;
+	overflow: hidden; // 親要素のスクロールを禁止
+}
+
+.sidebar {
+	background-color: #f8f9fa;
+	border-right: 1px solid #dee2e6;
+	
+	// 独立スクロールの肝
+	overflow-y: auto;
+	padding: 1rem;
+}
+
+.main-content {
+	background-color: #ffffff;
+	
+	// 独立スクロールの肝
+	overflow-y: auto;
+	padding: 2rem;
+	
+	/*header {
+		position: sticky; // ヘッダーを固定したい場合はここ
+		top: 0;
+		background: white;
+		z-index: 10;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid #eee;
+	}*/
+}
+
+/*
+// レスポンシブ対応（任意）
+@media (max-width: 768px) {
+	.layout-container {
+		grid-template-columns: 1fr; // スマホでは縦並び
+		grid-template-rows: auto 1fr;
+	}
+	
+	.sidebar {
+		height: 200px; // メニューの高さを制限してスクロール
+	}
+}*/
+
+
+
+/*
+.grid{
+	display: grid;
+	height: 100vh;
+	grid-template-areas:
+		"a b"
+		"a b";
+	grid-template-columns: 200px 1fr;
+	grid-template-rows: 1fr .5fr;
+}*/

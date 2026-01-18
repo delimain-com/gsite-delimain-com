@@ -1,0 +1,35 @@
+<div>
+	@if ($isHandle()) {
+		<i class="fa fa-arrows fa-hover cursor-pointer me-2 handle"
+		   cdkDragHandle></i>
+	}
+	<i class="fa fa-picture-o fa-hover cursor-pointer mx-1"
+	   (click)="el_file.click();"></i>
+	<i class="fa fa-times text-danger fa-hover cursor-pointer mx-2"
+	   [class.d-none]="$isEdit()"
+	   (click)="action_remove();"></i>
+	<i class="fa fa-check mx-1 text-primary fa-hover cursor-pointer"
+	   [class.d-none]="!$isEdit()"
+	   (click)="action_complete()"></i>
+	<i class="fa fa-ban mx-1 text-warning fa-hover cursor-pointer"
+	   [class.d-none]="!$isEdit()"
+	   (click)="action_cancel();"></i>
+	<i class="fa fa-spinner mx-1 fa-spin"
+	   [class.d-none]="!$isUploading()"></i>
+	<input type="file"
+	       style="display: none;"
+	       (change)="$isEdit.set(true);"
+	       #el_file/>
+</div>
+<div>
+	@let file = el_file?.files?.[0];
+	@if ($isEdit() && file) {
+		<div [style.width.px]="$width()"
+		     [style.height.px]="$height()">
+			<image-cropper [imageFile]="file"
+			               [aspectRatio]="$width()/$height()"
+			               [resizeToWidth]="$width()"
+			               (imageCropped)="$imageCroppedEvent.set($event);"></image-cropper>
+		</div>
+	}
+</div>

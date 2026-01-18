@@ -1,0 +1,10 @@
+@if ($isReady()) {
+	@if ($session()?.auth?.isLogin) {
+<!--		<router-outlet></router-outlet>-->
+		<app-layout></app-layout>
+	} @else {
+		<app-login></app-login>
+	}
+} @else {
+	<div>loading...</div>
+}

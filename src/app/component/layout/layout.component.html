@@ -1,0 +1,53 @@
+@if ($isReady()) {
+	@let domain = $domain();
+	@let site = siteInfo.$siteMap()?.[$domain()];
+	@if (domain && site) {
+		<div class="layout-container m-0 p-0">
+			<aside class="sidebar m-0 p-0">
+				<nav class="m-0 p-0">
+					<div class="bg-primary text-center p-1">
+						<a class="text-white text-decoration-none"
+						   href="https://{{site?.domain}}"
+						   target="_blank">
+							<strong [textContent]="site?.name"></strong>
+						</a>
+					</div>
+					<div class="bg-black text-center p-1 text-white">
+						<i class="fa fa-refresh fa-hover cursor-pointer"
+						   (click)="action_reload()"></i>
+					</div>
+					<div class="list-group m-0 p-0 mt-5 rounded-0">
+						@for (menu of $menuList(); track $index) {
+							<a class="list-group-item rounded-0 m-0"
+							   [routerLink]="[menu.path]"
+							   [queryParams]="{domain}"
+							   (click)="action_reload();"
+							   [textContent]="menu.label">
+							</a>
+						}
+						<div class="list-group-item">&nbsp;</div>
+						<button class="btn btn-danger rounded-0 m-0"
+						        (click)="action_logout();">
+							ログアウト
+						</button>
+					</div>
+				</nav>
+			</aside>
+			<main class="main-content m-0 p-0 overflow-y-hidden">
+				<div style="position:fixed;z-index:9999;pointer-events: none;text-align:center;width:100%;">
+					<span class="badge text-black"
+					      style="background-color:lightyellow;">
+						保存中...
+					</span>
+				</div>
+				@if ($isView()) {
+					<router-outlet></router-outlet>
+				}
+			</main>
+		</div>
+	} @else {
+		<app-site-list></app-site-list>
+	}
+} @else {
+	<div>loading...</div>
+}
