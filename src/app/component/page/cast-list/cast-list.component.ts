@@ -3,19 +3,24 @@ import {ApiService} from "../../../service/api/api.service";
 import {UtilService} from "../../../service/util/util.service";
 import {FormsModule} from "@angular/forms";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {Observable, switchMap, take, tap} from "rxjs";
+import {Observable, Subject, switchMap, take, tap} from "rxjs";
 import {Params, RouterLink} from "@angular/router";
 import {SortablejsModule} from "nxt-sortablejs";
 import {Options} from 'sortablejs';
 import {NavigationService} from "../../../service/navigation/navigation.service";
 import {injectQueryParams} from "ngxtension/inject-query-params";
+import {NotifyMessageService} from "../../../service/notify-message/notify-message.service";
+import CastSectionListComponent from "./cast-section-list/cast-section-list.component";
+import {DecimalPipe} from "@angular/common";
 
 @Component({
 	selector: 'app-cast-list',
 	imports: [
 		FormsModule,
 		RouterLink,
-		SortablejsModule
+		SortablejsModule,
+		CastSectionListComponent,
+		DecimalPipe
 	],
 	templateUrl: './cast-list.component.html',
 	styleUrl: './cast-list.component.scss',
@@ -25,15 +30,18 @@ export default class CastListComponent {
 
 	#DestroyRef: DestroyRef = inject(DestroyRef);
 
-	private util: UtilService = inject(UtilService);
+	public util: UtilService = inject(UtilService);
 	public navigation: NavigationService = inject(NavigationService);
 	private api: ApiService = inject(ApiService);
+
+	public notifyMessage: NotifyMessageService = inject(NotifyMessageService);
 
 	private changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
 
 	public castListSortableOptions: Options = {
 		handle: '.handle',
 		onUpdate: () => {
+			this.notifyMessage.show('保存中...');
 			const params: any = {query: {}};
 			{
 				let sort = Date.now();
@@ -48,7 +56,10 @@ export default class CastListComponent {
 			this.api.post('page/castList/save_castList_sort', params)
 				.pipe(
 					takeUntilDestroyed(this.#DestroyRef),
-					tap(() => this.$castList.set(params.castList)),
+					tap(() => {
+						this.$castList.set(params.castList);
+						this.notifyMessage.hide('保存しました');
+					}),
 					take(1)
 				)
 				.subscribe();
@@ -76,6 +87,13 @@ export default class CastListComponent {
 		return params;
 	});
 
+	action_select_castSelectionItem(item: any): void {
+		const select_castSelectionItem = this.$select_castSectionItem();
+		this.$select_castSectionItem.set(select_castSelectionItem?.uid === item.uid ? undefined : item);
+	}
+
+	public $select_castSectionItem: WritableSignal<any> = signal(undefined);
+
 	constructor() {
 		this.load()
 			.pipe(
@@ -91,7 +109,6 @@ export default class CastListComponent {
 			this.$castList.set(undefined);
 		}
 		const params: any = this.$params();
-		console.log(this.$queryParams());
 
 		return this.api.post('page/castList/load', params)
 			.pipe(
@@ -103,6 +120,9 @@ export default class CastListComponent {
 					this.$castListCount.set(castListCount || 0);
 					this.$castImageItem.set(castImageItem || {});
 					this.$castSectionItemList.set(castSectionItemList || []);
+					{
+						this.$select_castSectionItem.set(this.$castSectionItemList()?.at(0));
+					}
 				}),
 				take(1)
 			);
@@ -133,20 +153,25 @@ export default class CastListComponent {
 					const {castList, castListCount} = results;
 					this.$castList.set(castList || []);
 					this.$castListCount.set(castListCount || 0);
-					this.$load_castList_isWait.set(true);
-					this.changeDetectorRef.detectChanges();
+					this.$load_castList_isWait.set(false);
 				}),
 				take(1)
 			);
 	}
 
-	action_load_castList(): void {
-		this.load_castList()
+	load_castList$ = (() => {
+		const load_castList$ = new Subject();
+		load_castList$
 			.pipe(
 				takeUntilDestroyed(this.#DestroyRef),
-				take(1)
+				switchMap(() => this.load_castList())
 			)
 			.subscribe();
+		return load_castList$;
+	})();
+
+	action_load_castList(): void {
+		this.load_castList$.next(null);
 	}
 
 	action_remove_cast(cast: any): void {
@@ -168,6 +193,7 @@ export default class CastListComponent {
 	}
 
 	action_cast_viewFlag(cast: any): void {
+		this.notifyMessage.show('保存中...');
 		cast._ = {...cast._, isWait: true};
 		const params: any = {cast: {...cast, viewFlag: !cast.viewFlag, _: null}};
 		this.api.post('page/castList/save_cast_viewFlag', params)
@@ -176,6 +202,7 @@ export default class CastListComponent {
 				cast.viewFlag = !!params.cast.viewFlag;
 				cast._ = {...cast._, isWait: false};
 				this.changeDetectorRef.markForCheck();
+				this.notifyMessage.hide('保存しました');
 			}))
 			.subscribe();
 	}

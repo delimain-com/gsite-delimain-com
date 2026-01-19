@@ -1,10 +1,9 @@
-import {Component, DestroyRef, effect, inject, signal, WritableSignal} from '@angular/core';
+import {Component, DestroyRef, inject, signal, WritableSignal} from '@angular/core';
 import {ApiService} from "../../../service/api/api.service";
 import {RouterLink} from "@angular/router";
 import {SiteInfoService} from "../../../service/site-info/site-info.service";
 import {UtilService} from "../../../service/util/util.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {Observable, take, tap} from "rxjs";
+import {Observable} from "rxjs";
 
 @Component({
 	selector: 'app-site-list',
@@ -20,13 +19,10 @@ export default class SiteListComponent {
 
 	public util: UtilService = inject(UtilService);
 
-	private api: ApiService = inject(ApiService);
-
 	public siteInfo: SiteInfoService = inject(SiteInfoService);
 
 	public $isReady: WritableSignal<boolean> = signal(false);
 	public $siteList: WritableSignal<any> = this.siteInfo.$siteList;
-	public $langList: WritableSignal<any> = this.siteInfo.$langList;
 
 	constructor() {
 		this.$isReady.set(true);

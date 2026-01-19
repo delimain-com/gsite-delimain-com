@@ -1,0 +1,8 @@
+@if (notifyMessage.$isMessage()) {
+	<div class="message-box">
+		<span class="badge text-black message-text"
+		      style="background-color:lightyellow;"
+		      [textContent]="notifyMessage.$text()">
+		</span>
+	</div>
+}

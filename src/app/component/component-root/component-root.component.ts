@@ -17,6 +17,7 @@ import LayoutComponent from "../layout/layout.component";
 	],
 	templateUrl: './component-root.component.html',
 	styleUrl: './component-root.component.scss',
+	host: {class: 'p-0 m-0'}
 })
 export default class ComponentRootComponent {
 

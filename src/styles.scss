@@ -29,12 +29,31 @@
 	}
 }
 
-.cursor-pointer{
+.cursor-pointer {
 	cursor: pointer;
 }
-.cursor-move{
+
+.cursor-move {
 	cursor: move;
 }
+
 .fa.fa-hover:hover {
 	transform: scale(1.5);
+}
+
+.message-box {
+	position: fixed;
+	pointer-events: none;
+	width: -webkit-fill-available;
+	z-index: 9999;
+	text-align: center;
+	margin: 0;
+	padding: 0;
+	line-height: 1.5;
+}
+
+.label-count{
+	&:after{
+		content: '件';
+	}
 }

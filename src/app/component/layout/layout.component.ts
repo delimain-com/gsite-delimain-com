@@ -6,13 +6,17 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {SiteInfoService} from "../../service/site-info/site-info.service";
 import {injectQueryParams} from "ngxtension/inject-query-params";
 import SiteListComponent from "../page/site-list/site-list.component";
+import ElNotifyMessageComponent from "../el/el-notify-message/el-notify-message.component";
+import {NotifyMessageService} from "../../service/notify-message/notify-message.service";
+import {injectNavigationEnd} from "ngxtension/navigation-end";
 
 @Component({
 	selector: 'app-layout',
 	imports: [
 		RouterOutlet,
 		RouterLink,
-		SiteListComponent
+		SiteListComponent,
+		ElNotifyMessageComponent
 	],
 	templateUrl: './layout.component.html',
 	styleUrl: './layout.component.scss'
@@ -42,7 +46,17 @@ export default class LayoutComponent {
 
 	public $domain: Signal<any> = injectQueryParams('domain');
 
+	public notifyMessage: NotifyMessageService = inject(NotifyMessageService);
+
+	public navigationEnd$ = injectNavigationEnd();
+
 	constructor() {
+		this.navigationEnd$
+			.pipe(
+				takeUntilDestroyed(this.#DestroyRef),
+				tap(() => this.notifyMessage.close())
+			)
+			.subscribe();
 		this.siteInfo.load()
 			.pipe(
 				takeUntilDestroyed(this.#DestroyRef),
@@ -54,6 +68,7 @@ export default class LayoutComponent {
 
 	action_reload(): void {
 		this.$isView.set(false);
+		this.notifyMessage.close();
 		setTimeout(() => this.$isView.set(true));
 	}
 

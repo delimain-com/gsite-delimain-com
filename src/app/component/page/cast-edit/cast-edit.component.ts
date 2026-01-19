@@ -12,6 +12,7 @@ import {SortablejsModule} from "nxt-sortablejs";
 import {Options} from "sortablejs";
 import {CdkDrag, CdkDragDrop, CdkDragEnter, CdkDragStart, CdkDropList, moveItemInArray} from "@angular/cdk/drag-drop";
 import CastImageComponent from "./cast-image/cast-image.component";
+import {NotifyMessageService} from "../../../service/notify-message/notify-message.service";
 
 @Component({
 	selector: 'app-cast-edit',
@@ -26,7 +27,6 @@ import CastImageComponent from "./cast-image/cast-image.component";
 		CdkDropList,
 		CdkDrag,
 		CastImageComponent,
-
 	],
 	templateUrl: './cast-edit.component.html',
 	styleUrl: './cast-edit.component.scss',
@@ -36,6 +36,8 @@ export default class CastEditComponent {
 	#DestroyRef: DestroyRef = inject(DestroyRef);
 
 	public ngZone = inject(NgZone);
+
+	public notifyMessage: NotifyMessageService = inject(NotifyMessageService);
 
 	public changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
 
@@ -226,7 +228,10 @@ export default class CastEditComponent {
 		this._canceledByEsc = false;
 	}
 
+	$load_isWait: WritableSignal<boolean> = signal(false);
+
 	load(): Observable<any> {
+		this.$load_isWait.set(true);
 		const params: any = {query: {}};
 		{
 			params.query.uid = this.$q_uid();
@@ -271,6 +276,7 @@ export default class CastEditComponent {
 						this.$castIconList.set(results.castIconList || []);
 					}
 					this.$results.set(results);
+					this.$load_isWait.set(false);
 				})
 			);
 	}
@@ -307,7 +313,6 @@ export default class CastEditComponent {
 		this.save()
 			.pipe(
 				takeUntilDestroyed(this.#DestroyRef),
-				tap(console.log),
 				take(1)
 			)
 			.subscribe();
@@ -356,6 +361,7 @@ export default class CastEditComponent {
 	}
 
 	save(): Observable<any> {
+		this.notifyMessage.show('保存中...');
 		this.$state_save_isWait.set(true);
 		const cast = this.$cast();
 		const castImageListMap = this.$castImageListMap() || {};
@@ -376,7 +382,10 @@ export default class CastEditComponent {
 		return this.api.post('page/castEdit/save', params)
 			.pipe(
 				takeUntilDestroyed(this.#DestroyRef),
-				tap(() => this.$state_save_isWait.set(false)),
+				tap(() => {
+					this.$state_save_isWait.set(false);
+					this.notifyMessage.hide('保存しましました');
+				}),
 				take(1)
 			);
 	}

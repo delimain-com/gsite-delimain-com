@@ -1,78 +1,119 @@
 @if ($isReady()) {
-	<div class="card h-100 user-select-none">
-		<div class="card-header rounded-0">
-			<strong>キャスト一覧</strong>
-		</div>
-		<div class="card-body p-1 overflow-y-scroll">
-			<div class="card">
-				<div class="card-header p-0 px-1">
-					<span>検索</span>
-				</div>
-				<div class="card-body p-1">
-					<div class="d-flex flex-row flex-wrap">
-						<div class="input-group input-group-sm w-auto">
-							<div class="input-group-text">
-								キャスト名
+	<div class="d-flex flex-row h-100">
+		<div class="card w-100 h-100 user-select-none p-0 m-0">
+			<div class="card-header rounded-0">
+				<strong>キャスト一覧</strong>
+			</div>
+			<div class="card-body p-1 m-0 overflow-y-scroll">
+				<div class="card ">
+					<div class="card-header p-0 px-1">
+						<span>検索</span>
+					</div>
+					<div class="card-body p-1">
+						<div class="d-flex flex-row flex-wrap">
+							<div class="input-group input-group-sm w-auto">
+								<div class="input-group-text">
+									キャスト名
+								</div>
+								<input class="form-control form-control-sm"
+								       type="text"
+								       [ngModel]="$q_castName()"
+								       (ngModelChange)="$q_castName.set($event);action_load_castList();">
 							</div>
-							<input class="form-control form-control-sm"
-							       type="text"
-							       [ngModel]="$q_castName()"
-							       (ngModelChange)="$q_castName.set($event);action_load_castList();">
+						</div>
+					</div>
+				</div>
+				<div class="card my-1">
+					<div class="card-header p-0 px-1">
+						<span>操作</span>
+					</div>
+					<div class="card-body p-1">
+						@let select_castSectionItem = $select_castSectionItem();
+						@let select_castSectionItemUid = select_castSectionItem?.uid;
+						<div class="input-group input-group-sm">
+							<span class="input-group-text bg-secondary-subtle">セクション</span>
+							@for (item of $castSectionItemList(); track item.uid) {
+								<button class="btn btn-sm border"
+								        [class.btn-light]="item.uid!==select_castSectionItemUid"
+								        [class.btn-success]="item.uid===select_castSectionItemUid"
+								        (click)="action_select_castSelectionItem(item);"
+								        [textContent]="item.label"></button>
+							}
+						</div>
+					</div>
+				</div>
+				<div class="card my-1">
+					<div class="card-header p-0 px-1">
+						<div class="d-flex flex-row justify-content-between px-1">
+							<div>
+								<span>一覧</span>
+								@let castListCount = this.$castListCount();
+								@if (util.isNumber(castListCount)) {
+									<span class="mx-1 label-count"
+									      [textContent]="castListCount|number"></span>
+								}
+							</div>
+							<div>
+								<i class="fa fa-refresh fa-hover cursor-pointer"
+								   [class.fa-spin]="$load_castList_isWait()"
+								   (click)="action_load_castList();"></i>
+							</div>
+						</div>
+					</div>
+					<div class="card-body p-1">
+						<div class="d-flex flex-wrap gap-1 col"
+						     [nxtSortablejs]="$castList()"
+						     [config]="castListSortableOptions">
+							@for (cast of $castList(); track cast.uid; ) {
+								<div>
+									<div class="card m-0 h-100"
+									     style="width:200px;">
+										<div class="card-header p-1 d-flex flex-row justify-content-between g-1">
+											<i class="fa fa-arrows handle fa-hover cursor-move handle"></i>
+											<i class="fa fa-times text-danger fa-hover cursor-pointer"
+											   (click)="action_remove_cast(cast);"></i>
+										</div>
+										<div class="card-body p-0">
+											<div class="p-0">
+												@if (cast.imageSrc; as src) {
+													<img class="w-100 cursor-pointer"
+													     [src]="src"
+													     routerLink="/castEdit"
+													     [queryParams]="{domain:navigation.$domain(),uid:cast.uid}"
+													     loading="lazy"/>
+												}
+											</div>
+											<div class="px-1"
+											     style="white-space:nowrap;text-overflow: ellipsis;overflow:hidden;">
+												<a routerLink="/castEdit"
+												   [queryParams]="{domain:navigation.$domain(),uid:cast.uid}"
+												   [textContent]="cast.name"></a>
+											</div>
+										</div>
+										<div class="card-footer p-1 text-center bg-white">
+											<button class="btn btn-sm "
+											        [class.btn-success]="cast.viewFlag"
+											        [class.border]="!cast.viewFlag"
+											        [class.disabled]="cast._?.isWait"
+											        [disabled]="cast._?.isWait"
+											        (click)="action_cast_viewFlag(cast);"
+											        [textContent]="cast.viewFlag ? '公開中' : '非公開'">
+											</button>
+										</div>
+									</div>
+								</div>
+							}
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="card my-1">
-				<div class="card-header p-0 px-1">
-					<span>一覧</span>
-				</div>
-				<div class="card-body p-1">
-					<div class="d-flex flex-wrap gap-1"
-					     [nxtSortablejs]="$castList()"
-					     [config]="castListSortableOptions">
-						@for (cast of $castList(); track cast.uid; ) {
-							<div>
-								<div class="card m-0 h-100"
-								     style="width:200px;">
-									<div class="card-header p-1 d-flex flex-row justify-content-between g-1">
-										<i class="fa fa-arrows handle fa-hover cursor-move handle"></i>
-										<i class="fa fa-times text-danger fa-hover cursor-pointer"
-										   (click)="action_remove_cast(cast);"></i>
-									</div>
-									<div class="card-body p-0">
-										<div class="p-0">
-											@if (cast.imageSrc; as src) {
-												<img class="w-100 cursor-pointer"
-												     [src]="src"
-												     routerLink="/castEdit"
-												     [queryParams]="{domain:navigation.$domain(),uid:cast.uid}"
-												     loading="lazy"/>
-											}
-										</div>
-										<div class="px-1"
-										     style="white-space:nowrap;text-overflow: ellipsis;overflow:hidden;">
-											<a routerLink="/castEdit"
-											   [queryParams]="{domain:navigation.$domain(),uid:cast.uid}"
-											   [textContent]="cast.name"></a>
-										</div>
-									</div>
-									<div class="card-footer p-1 text-center bg-white">
-										<button class="btn btn-sm "
-										        [class.btn-success]="cast.viewFlag"
-										        [class.border]="!cast.viewFlag"
-										        [class.disabled]="cast._?.isWait"
-										        [disabled]="cast._?.isWait"
-										        (click)="action_cast_viewFlag(cast);"
-										        [textContent]="cast.viewFlag ? '公開中' : '非公開'">
-										</button>
-									</div>
-								</div>
-							</div>
-						}
-					</div>
-				</div>
-			</div>
 		</div>
+		@if ($select_castSectionItem(); as select_castSectionItem; ) {
+			<div class="col-2 vh-100 overflow-y-hidden">
+				<app-cast-section-list [select_castSectionItem]="select_castSectionItem"
+				                       (actionClose)="$select_castSectionItem.set(undefined);"></app-cast-section-list>
+			</div>
+		}
 	</div>
 } @else {
 	<div>loading...</div>

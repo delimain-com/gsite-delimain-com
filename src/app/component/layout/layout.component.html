@@ -34,13 +34,8 @@
 				</nav>
 			</aside>
 			<main class="main-content m-0 p-0 overflow-y-hidden">
-				<div style="position:fixed;z-index:9999;pointer-events: none;text-align:center;width:100%;">
-					<span class="badge text-black"
-					      style="background-color:lightyellow;">
-						保存中...
-					</span>
-				</div>
 				@if ($isView()) {
+					<app-el-notify-message></app-el-notify-message>
 					<router-outlet></router-outlet>
 				}
 			</main>
