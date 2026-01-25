@@ -16,7 +16,6 @@ import {SiteInfoService} from "../../../service/site-info/site-info.service";
 	imports: [
 		DecimalPipe,
 		FormsModule,
-		JsonPipe,
 		RouterLink
 	],
 	templateUrl: './cast-schedule-datetime-list.component.html',

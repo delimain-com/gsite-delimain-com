@@ -14,7 +14,6 @@ import {NotifyMessageService} from "../../../../service/notify-message/notify-me
 @Component({
 	selector: 'app-cast-section-list',
 	imports: [
-		JsonPipe,
 		SortablejsModule
 	],
 	templateUrl: './cast-section-list.component.html',

@@ -26,7 +26,6 @@ import {ActivatedRoute} from "@angular/router";
 		NgbNavOutlet,
 		FormsModule,
 		ElCkeditorComponent,
-		JsonPipe
 	],
 	templateUrl: './info-edit.component.html',
 	styleUrl: './info-edit.component.scss',

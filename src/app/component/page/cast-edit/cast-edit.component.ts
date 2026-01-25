@@ -241,13 +241,21 @@ export default class CastEditComponent {
 				tap(({results}) => {
 					{
 						const now = Date.now();
-						this.$cast.set(results.cast || {
+						const cast = results.cast || {
 							uid: this.$q_uid(),
 							regDatetime: now,
 							viewDatetime: now,
 							viewFlag: true,
 							sort: now
-						});
+						};
+						{
+							const m_regDatetime = this.util.m(cast.regDatetime);
+							if (m_regDatetime.isValid()) {
+								cast.regDate = m_regDatetime.format('YYYY-MM-DD');
+								cast.regTime = m_regDatetime.format('HH:mm');
+							}
+						}
+						this.$cast.set(cast);
 					}
 					this.$castDetailList.set(results.castDetailList || []);
 					{
