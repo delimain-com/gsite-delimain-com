@@ -6,7 +6,7 @@ import {ulid} from 'ulid';
 import {ApiService} from "../api/api.service";
 import {Observable, of} from "rxjs";
 import {linkedQueryParam} from "ngxtension/linked-query-param";
-import {isNumber, remove} from "lodash";
+import {isNumber, noop, remove} from "lodash";
 
 @Injectable({
 	providedIn: 'root',
@@ -22,9 +22,10 @@ export class UtilService {
 	public assing = Object.assign;
 	public remove = remove;
 	public isNumber = isNumber;
+	public noop = noop;
 
 	constructor() {
-		this.m.updateLocale('ja', {week: {dow: 1}});
+		// this.m.updateLocale('ja', {week: {dow: 1}});
 	}
 
 	find(array: any[],): any {

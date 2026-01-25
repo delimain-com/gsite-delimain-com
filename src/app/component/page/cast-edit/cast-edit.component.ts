@@ -240,7 +240,14 @@ export default class CastEditComponent {
 			.pipe(
 				tap(({results}) => {
 					{
-						results.cast && this.$cast.set(results.cast);
+						const now = Date.now();
+						this.$cast.set(results.cast || {
+							uid: this.$q_uid(),
+							regDatetime: now,
+							viewDatetime: now,
+							viewFlag: true,
+							sort: now
+						});
 					}
 					this.$castDetailList.set(results.castDetailList || []);
 					{

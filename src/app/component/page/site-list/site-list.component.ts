@@ -1,5 +1,4 @@
 import {Component, DestroyRef, inject, signal, WritableSignal} from '@angular/core';
-import {ApiService} from "../../../service/api/api.service";
 import {RouterLink} from "@angular/router";
 import {SiteInfoService} from "../../../service/site-info/site-info.service";
 import {UtilService} from "../../../service/util/util.service";

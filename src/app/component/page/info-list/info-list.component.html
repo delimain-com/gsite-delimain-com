@@ -1,1 +1,104 @@
-<pre>{{$results()|json}}</pre>
+@if ($isReady()) {
+	<div class="card">
+		<div class="card-header p-1">
+			<span>新着一覧</span>
+		</div>
+		<div class="card-body p-1">
+			<div class="d-flex flex-column gap-1">
+				<div class="card">
+					<div class="card-header p-0 px-1">
+						<span>検索</span>
+					</div>
+					<div class="card-body p-1">
+						<div class="d-flex flex-wrap flex-row gap-1">
+							<div class="input-group input-group-sm w-auto">
+								<div class="input-group-text">タイトル</div>
+								<input class="form-control form-control-sm"
+								       type="text"
+								       [ngModel]="$q_title()"
+								       (ngModelChange)="$q_title.set($event);action_load_infoList();">
+							</div>
+							<div class="input-group input-group-sm w-auto">
+								<div class="input-group-text">表示件数</div>
+								<select class="form-select form-select-sm"
+								        [ngModel]="$q_limit()"
+								        (ngModelChange)="$q_limit.set($event);action_load_infoList();">
+									@for (limit of [1, 5, 10, 30, 50, 100, 500, 100]; track limit) {
+										<option [ngValue]="limit"
+										        [textContent]="limit |number"></option>
+									}
+								</select>
+							</div>
+							<div class="input-group input-group-sm w-auto">
+								<div class="input-group-text">ページ</div>
+								<input class="form-control form-control-sm"
+								       type="number"
+								       [min]="1"
+								       [ngModel]="$q_page()"
+								       (ngModelChange)="$q_page.set($event);action_load_infoList();"
+								       (wheel)="util.noop();"
+								       style="width:4rem;"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-header p-0 px-1">
+						<div class="d-flex justify-content-between px-1">
+							<div>
+								<span>一覧</span>
+								@let infoListCount = $infoListCount();
+								@if (util.isNumber(infoListCount)) {
+									<span class="mx-1 label-count"
+									      [textContent]="infoListCount|number"></span>
+								}
+							</div>
+							<div>
+								<i class="fa fa-refresh fa-hover cursor-pointer"
+								   [class.fa-spin]="$load_infoList_isWait()"
+								   (click)="action_load_infoList();"></i>
+							</div>
+						</div>
+					</div>
+					@if ($infoList(); as infoList; ) {
+						<div class="card-body p-1">
+							<table class="table table-sm table-bordered table-striped table-hover info-list-table">
+								<thead>
+									<tr class="table-warning">
+										<th>タイトル</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for (info of infoList; track info.uid) {
+										<tr>
+											<td>
+												<a routerLink="/infoEdit"
+												   [queryParams]="{uid:info.uid,domain:siteInfo.$domain()}"
+												   [textContent]="info.title"></a>
+											</td>
+											<td>
+												<div class="d-flex flex-row gap-1 justify-content-center">
+													<button class="btn btn-sm border"
+													        [class.btn-success]="info.viewFlag"
+													        [textContent]="info.viewFlag?'表示中':'非表示'"
+													        (click)="action_info_viewFlag(info);"></button>
+													<button class="btn btn-sm btn-danger"
+													        (click)="action_remove_info(info);">
+														削除
+													</button>
+												</div>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+} @else {
+	<div>loading...</div>
+}

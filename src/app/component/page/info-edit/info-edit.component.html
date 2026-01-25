@@ -1,1 +1,149 @@
-<p>info-edit works!</p>
+@if ($isReady()) {
+	<!--suppress JSVoidFunctionReturnValueUsed -->
+	<div class="card h-100 m-0">
+		<div class="card-header p-0 rounded-0">
+			<div class="p-1">
+				<strong>新着編集</strong>
+			</div>
+			<div class="bg-white">
+				<ul class="nav-tabs rounded-0"
+				    #nav="ngbNav"
+				    [animation]="false"
+				    ngbNav>
+					@for (site_lang of siteInfo.$site_langList(); track $index; ) {
+						@let lang = site_lang.lang;
+						@let info = $info() || {};
+						@let infoDetail = $infoDetailMap()?.[lang];
+						<li class="rounded-0"
+						    ngbNavItem>
+							<button class="btn-sm btn p-1 rounded-0"
+							        ngbNavLink
+							        style="width:5rem;"
+							        [textContent]="site_lang.label"></button>
+							<ng-template ngbNavContent>
+								<div class="">
+									<table class="table table-bordered table-fixed infoEdit_table">
+										<tr>
+											<th>
+												<div class="d-flex flex-row gap-1">
+													<span>公開情報</span>
+													<span class="badge text-bg-secondary rounded-pill">共通</span>
+												</div>
+											</th>
+											<td>
+												<div>
+													<button class="btn btn-sm border"
+													        [class.btn-success]="info.viewFlag"
+													        (click)="info.viewFlag=!info.viewFlag"
+													        [textContent]="info.viewFlag?'表示中':'非表示'">
+													</button>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th>タイトル</th>
+											<td>
+												<div class="input-group input-group-sm w-auto">
+													<input class="form-control form-control-sm"
+													       [ngModel]="infoDetail.title"
+													       (ngModelChange)="infoDetail.title=$event;"
+													       type="text">
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th>本文</th>
+											<td>
+												<div class="p-2">
+													<app-el-ckeditor [value]="infoDetail.body"
+													                 (valueChange)="infoDetail.body=$event;"></app-el-ckeditor>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th>
+												<div class="d-flex flex-row gap-1">
+													<span>画像</span>
+													<span class="badge text-bg-secondary rounded-pill">共通</span>
+												</div>
+											</th>
+											<td>
+												<div class="d-flex flex-column gap-1">
+													<div>
+														<input type="file"
+														       style="display: none;"
+														       (change)="action_upload_image();"
+														       #el_file/>
+														<i class="fa fa-picture-o fa-hover cursor-pointer"
+														   (click)="el_file.click();"></i>
+														<i class="fa fa-times text-danger cursor-pointer fa-hover mx-3"
+														   (click)="info.imagePath=undefined;info.imageSrc=undefined;"></i>
+														@if ($upload_image_isWait()) {
+															<i class="fa fa-refresh mx-1 fa-spin"></i>
+														}
+													</div>
+													<div style="width:300px;">
+														@if (info?.imageSrc; as src) {
+															<img class="w-100"
+															     [src]="src"/>
+														}
+													</div>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th>
+												<div class="d-flex flex-row gap-1">
+													<span>公開情報</span>
+													<span class="badge text-bg-secondary rounded-pill">共通</span>
+												</div>
+											</th>
+											<td>
+												<div>
+													<button class="btn btn-sm border"
+													        [class.btn-success]="info.viewFlag"
+													        (click)="info.viewFlag=!info.viewFlag">
+														表示中
+													</button>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</div>
+							</ng-template>
+						</li>
+					}
+				</ul>
+			</div>
+		</div>
+		<div class="card-body m-0 p-0 h-100 overflow-y-scroll ">
+			<div class="card">
+				<div class="card-header p-1">
+					<span>編集</span>
+				</div>
+				<div class="card-body p-1">
+					<div class="m-1">
+						<button class="btn btn-sm btn-primary"
+						        [class.disabled]="$save_isWait()"
+						        [disabled]="$save_isWait()"
+						        (click)="action_save();">
+							保存
+						</button>
+					</div>
+					<div [ngbNavOutlet]="nav"></div>
+					<div class="m-1">
+						<button class="btn btn-sm btn-primary"
+						        [class.disabled]="$save_isWait()"
+						        [disabled]="$save_isWait()"
+						        (click)="action_save();">
+							保存
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+	</div>
+} @else {
+	<div>loading...</div>
+}

@@ -28,8 +28,10 @@
 										<tbody>
 											<tr>
 												<th>
-													<span>公開状態</span>
-													<span class="badge mx-1 text-bg-secondary rounded-pill">共通</span>
+													<div class="d-flex flex-row gap-1">
+														<span>公開状態</span>
+														<span class="badge bg-secondary rounded-pill">共通</span>
+													</div>
 												</th>
 												<td>
 													<div class="row">
@@ -185,8 +187,10 @@
 											@if (pageConfig?.castPlay?.useFlag) {
 												<tr>
 													<th>
-														<span>プレイ</span>
-														<span class="badge text-bg-secondary rounded-pill mx-1">共通</span>
+														<div class="d-flex flex-row gap-1">
+															<span>プレイ</span>
+															<span class="badge text-bg-secondary rounded-pill">共通</span>
+														</div>
 													</th>
 													<td>
 														@for (castPlayGroup of $castPlayGroupList(); track $index) {
@@ -253,9 +257,9 @@
 											}
 											<tr>
 												<th>
-													<div>
+													<div class="d-flex flex-row gap-1">
 														<span>画像</span>
-														<span class="badge mx-1 text-bg-secondary rounded-pill">共通</span>
+														<span class="badge text-bg-secondary rounded-pill">共通</span>
 													</div>
 												</th>
 												<td>
@@ -315,8 +319,10 @@
 											</tr>
 											<tr>
 												<th>
-													<span>公開状態</span>
-													<span class="badge mx-1 text-bg-secondary rounded-pill">共通</span>
+													<div class="d-flex flex-row gap-1">
+														<span>公開状態</span>
+														<span class="badge text-bg-secondary rounded-pill">共通</span>
+													</div>
 												</th>
 												<td>
 													<div class="row">

@@ -1,0 +1,6 @@
+@if ($isReady()) {
+	<ckeditor [editor]="Editor"
+	          [config]="config"
+	          [ngModel]="value()||''"
+	          (ngModelChange)="value.set($event);"></ckeditor>
+}

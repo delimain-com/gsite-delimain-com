@@ -1,1 +1,129 @@
-<p>cast-schedule-datetime-list works!</p>
+@if ($isReady()) {
+	<div class="card w-100 h-100 p-0 m-0">
+		<div class="card-header rounded-0">
+			<strong>キャストスケジュール</strong>
+			@let m_scheduleDate = util.m($q_scheduleDate());
+			@if (m_scheduleDate.isValid()) {
+				<span class="mx-1"
+				      [textContent]="m_scheduleDate.format('YYYY-MM-DD')"></span>
+			}
+		</div>
+		<div class="card-body p-1 m-0 overflow-y-scroll">
+			<div class="d-flex flex-column gap-1">
+				<div class="card">
+					<div class="card-header p-0 px-1">
+						<span>検索</span>
+					</div>
+					<div class="card-body p-1">
+						<div class="d-flex flex-wrap gap-1">
+							<div class="input-group input-group-sm w-auto">
+								<div class="input-group-text">日付</div>
+								<input class="form-control form-control-sm"
+								       type="date"
+								       [ngModel]="util.m($q_scheduleDate()).format('YYYY-MM-DD')"
+								       (ngModelChange)="$q_scheduleDate.set(util.m($event).toDate());action_load_castScheduleDatetimeList();"
+								       (wheel)="util.noop();">
+								<button class="btn btn-sm border border-1"
+								        (click)="$q_scheduleDate.set(util.m().toDate());action_load_castScheduleDatetimeList();">
+									今日
+								</button>
+							</div>
+							<div class="input-group input-group-sm w-auto">
+								<div class="input-group-text">表示件数</div>
+								<select class="form-select form-select-sm"
+								        [ngModel]="$q_limit()"
+								        (ngModelChange)="$q_limit.set($event);action_load_castScheduleDatetimeList();">
+									@for (limit of [1, 5, 10, 30, 50, 100, 500, 100]; track limit) {
+										<option [ngValue]="limit"
+										        [textContent]="limit |number"></option>
+									}
+								</select>
+							</div>
+							<div class="input-group input-group-sm w-auto">
+								<div class="input-group-text">ページ</div>
+								<input class="form-control form-control-sm"
+								       type="number"
+								       [min]="1"
+								       [ngModel]="$q_page()"
+								       (ngModelChange)="$q_page.set($event);action_load_castScheduleDatetimeList();"
+								       (wheel)="util.noop();"
+								       style="width:4rem;"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-header p-0 px-1">
+						<div class="d-flex flex-row justify-content-between px-1">
+							<div>
+								<span>一覧</span>
+								@let castScheduleDatetimeListCount = this.$castScheduleDatetimeListCount();
+								@if (util.isNumber(castScheduleDatetimeListCount)) {
+									<span class="mx-1 label-count"
+									      [textContent]="castScheduleDatetimeListCount|number"></span>
+								}
+							</div>
+							<div>
+								<i class="fa fa-refresh fa-hover cursor-pointer"
+								   [class.fa-spin]="$load_castScheduleDatetimeList_isWait()"
+								   (click)="action_load_castScheduleDatetimeList();"></i>
+							</div>
+						</div>
+					</div>
+					@if ($castScheduleDatetimeList(); as castScheduleDatetimeList; ) {
+						<div class="card-body p-1">
+							<div class="table-responsive">
+								<table class="table table-sm table-bordered table-hover cast-schedule-datetime-list-table">
+									<thead>
+										<tr class="table-warning">
+											<th>キャスト名</th>
+											<th>操作</th>
+										</tr>
+									</thead>
+									<tbody>
+										@for (castScheduleDatetime of castScheduleDatetimeList; track castScheduleDatetime.castUid; ) {
+											<tr>
+												<td>
+													<a routerLink="/castEdit"
+													   [queryParams]="{domain:siteInfo.$domain(),uid:castScheduleDatetime.castUid}"
+													   [textContent]="castScheduleDatetime.castName||'未入力'"></a>
+												</td>
+												<td>
+													<div class="input-group input-group-sm">
+														<select class="form-select form-select-sm"
+														        [ngModel]="castScheduleDatetime.startTime||''"
+														        (ngModelChange)="castScheduleDatetime.startTime=$event;action_select_schedule(castScheduleDatetime)">
+															@for (input of $inputList(); track input.value) {
+																<option [ngValue]="input.value"
+																        [textContent]="input.label"></option>
+															}
+														</select>
+														<div class="input-group-text">～</div>
+														<select class="form-select form-select-sm"
+														        [ngModel]="castScheduleDatetime.endTime||''"
+														        (ngModelChange)="castScheduleDatetime.endTime=$event;action_select_schedule(castScheduleDatetime)">
+															@for (input of $inputList(); track input.value) {
+																<option [ngValue]="input.value"
+																        [textContent]="input.label"></option>
+															}
+														</select>
+														<div class="input-group-text">
+															<i class="fa fa-times text-danger cursor-pointer fa-hover"
+															   (click)="castScheduleDatetime.startTime='';castScheduleDatetime.endTime='';action_select_schedule(castScheduleDatetime);"></i>
+														</div>
+													</div>
+												</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+} @else {
+	<div>loading...</div>
+}

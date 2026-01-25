@@ -1,17 +1,21 @@
-import {ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, Signal, signal, WritableSignal} from '@angular/core';
+import {ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, Signal, signal, viewChild, WritableSignal} from '@angular/core';
 import {ApiService} from "../../../service/api/api.service";
 import {UtilService} from "../../../service/util/util.service";
 import {FormsModule} from "@angular/forms";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {Observable, Subject, switchMap, take, tap} from "rxjs";
-import {Params, RouterLink} from "@angular/router";
+import {ActivatedRoute, ActivatedRouteSnapshot, Params, RouterLink} from "@angular/router";
 import {SortablejsModule} from "nxt-sortablejs";
 import {Options} from 'sortablejs';
 import {NavigationService} from "../../../service/navigation/navigation.service";
 import {injectQueryParams} from "ngxtension/inject-query-params";
 import {NotifyMessageService} from "../../../service/notify-message/notify-message.service";
 import CastSectionListComponent from "./cast-section-list/cast-section-list.component";
-import {DecimalPipe} from "@angular/common";
+import {DecimalPipe, JsonPipe, NgClass} from "@angular/common";
+import {RepeatPipe} from "ngxtension/repeat-pipe";
+import {injectLocalStorage} from "ngxtension/inject-local-storage";
+import {CastModel} from "../../../model/cast.model";
+import {NoimageService} from "../../../service/noimage/noimage.service";
 
 @Component({
 	selector: 'app-cast-list',
@@ -20,7 +24,9 @@ import {DecimalPipe} from "@angular/common";
 		RouterLink,
 		SortablejsModule,
 		CastSectionListComponent,
-		DecimalPipe
+		DecimalPipe,
+		NgClass,
+		RepeatPipe
 	],
 	templateUrl: './cast-list.component.html',
 	styleUrl: './cast-list.component.scss',
@@ -33,16 +39,23 @@ export default class CastListComponent {
 	public util: UtilService = inject(UtilService);
 	public navigation: NavigationService = inject(NavigationService);
 	private api: ApiService = inject(ApiService);
+	private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
 	public notifyMessage: NotifyMessageService = inject(NotifyMessageService);
 
 	private changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
 
+	public noimage: NoimageService = inject(NoimageService);
+
+	public Math: Math = Math;
+
+	public $viewSettings_castSectionClass: WritableSignal<string> = injectLocalStorage('CastListComponent.$viewSettings_castSectionClass', {defaultValue: 'col-2'});
+
 	public castListSortableOptions: Options = {
 		handle: '.handle',
 		onUpdate: () => {
 			this.notifyMessage.show('保存中...');
-			const params: any = {query: {}};
+			const params: any = {};
 			{
 				let sort = Date.now();
 				const castList = this.$castList() || [];
@@ -52,6 +65,7 @@ export default class CastListComponent {
 						sort: sort--
 					};
 				});
+
 			}
 			this.api.post('page/castList/save_castList_sort', params)
 				.pipe(
@@ -71,21 +85,26 @@ export default class CastListComponent {
 	public $queryParams: Signal<Params> = injectQueryParams();
 
 	public $q_castName: WritableSignal<string> = signal('');
+	public $q_viewFlag: WritableSignal<boolean | undefined> = signal(undefined);
+	public $q_limit: WritableSignal<number> = signal(100);
+	public $q_page: WritableSignal<number> = signal(1);
 
+	public $params = computed(() => {
+		const params: any = {query: {}};
+		{
+			params.query.name = this.$q_castName();
+			params.query.viewFlag = this.$q_viewFlag();
+			params.query.limit = this.$q_limit();
+			params.query.offset = ((this.$q_page() - 1) * this.$q_limit());
+		}
+		return params;
+	});
 	public $pageConfig: WritableSignal<any> = signal(undefined);
 	public $castList: WritableSignal<any> = signal(undefined);
 	public $castListCount: WritableSignal<any> = signal(undefined);
 	public $castImageItem: WritableSignal<any> = signal(undefined);
-	public $castSectionItemList: WritableSignal<any> = signal(undefined);
 
-	public $params = computed(() => {
-		const params: any = {
-			query: {
-				name: this.$q_castName()
-			}
-		};
-		return params;
-	});
+	public $castSectionItemList: WritableSignal<any> = signal(undefined);
 
 	action_select_castSelectionItem(item: any): void {
 		const select_castSelectionItem = this.$select_castSectionItem();
@@ -94,12 +113,15 @@ export default class CastListComponent {
 
 	public $select_castSectionItem: WritableSignal<any> = signal(undefined);
 
+	public $castSectionListComponent = viewChild(CastSectionListComponent);
+
 	constructor() {
-		this.load()
+		this.activatedRoute.queryParams
 			.pipe(
 				takeUntilDestroyed(this.#DestroyRef),
-				tap(() => this.$isReady.set(true)),
-				take(1)
+				tap(() => this.$isReady.set(false)),
+				switchMap(() => this.load()),
+				tap(() => this.$isReady.set(true))
 			)
 			.subscribe();
 	}
@@ -107,6 +129,7 @@ export default class CastListComponent {
 	load(): Observable<any> {
 		{
 			this.$castList.set(undefined);
+			this.$castListCount.set(undefined);
 		}
 		const params: any = this.$params();
 
@@ -120,9 +143,9 @@ export default class CastListComponent {
 					this.$castListCount.set(castListCount || 0);
 					this.$castImageItem.set(castImageItem || {});
 					this.$castSectionItemList.set(castSectionItemList || []);
-					{
-						this.$select_castSectionItem.set(this.$castSectionItemList()?.at(0));
-					}
+					// {
+					// 	this.$select_castSectionItem.set(this.$castSectionItemList()?.at(0));
+					// }
 				}),
 				take(1)
 			);
@@ -150,9 +173,8 @@ export default class CastListComponent {
 			.pipe(
 				takeUntilDestroyed(this.#DestroyRef),
 				tap(({results}) => {
-					const {castList, castListCount} = results;
-					this.$castList.set(castList || []);
-					this.$castListCount.set(castListCount || 0);
+					this.$castList.set(results.castList || []);
+					this.$castListCount.set(results.castListCount || 0);
 					this.$load_castList_isWait.set(false);
 				}),
 				take(1)
@@ -174,19 +196,30 @@ export default class CastListComponent {
 		this.load_castList$.next(null);
 	}
 
-	action_remove_cast(cast: any): void {
-		if (!confirm('削除は取り消せません。')) {
-			return;
-		}
+	remove_cast(cast: any): Observable<any> {
 		const params: any = {cast: {...cast, _: null}};
-		this.api.post('page/castList/remove_cast', params)
+		return this.api.post('page/castList/remove_cast', params)
 			.pipe(
 				takeUntilDestroyed(this.#DestroyRef),
 				tap(() => {
 					this.$castList.update((castList: any) => {
 						return castList.filter((cast: any) => cast.uid !== params.cast.uid);
 					});
+					this.$castListCount.update((castListCount: number) => {
+						return castListCount - 1;
+					});
 				}),
+				take(1)
+			);
+	}
+
+	action_remove_cast(cast: any): void {
+		if (!confirm('削除は取り消せません。')) {
+			return;
+		}
+		this.remove_cast(cast)
+			.pipe(
+				takeUntilDestroyed(this.#DestroyRef),
 				take(1)
 			)
 			.subscribe();
@@ -205,5 +238,16 @@ export default class CastListComponent {
 				this.notifyMessage.hide('保存しました');
 			}))
 			.subscribe();
+	}
+
+	add_castSection(cast: CastModel): void {
+		const castSectionListComponent = this.$castSectionListComponent();
+		castSectionListComponent?.add_castSection(cast)
+			?.pipe(
+				takeUntilDestroyed(this.#DestroyRef),
+				tap(console.log),
+				take(1)
+			)
+			?.subscribe();
 	}
 }

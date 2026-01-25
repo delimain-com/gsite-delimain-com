@@ -1,4 +1,4 @@
-<div class="card h-100">
+<div class="card h-100 w-100 user-select-none">
 	<div class="card-header p-1">
 		<div class="d-flex justify-content-between p-1">
 			<div [textContent]="$select_castSectionItem()?.label"></div>
@@ -8,5 +8,38 @@
 			</div>
 		</div>
 	</div>
-	<div class="card-body overflow-y-scroll"></div>
+	<div class="card-body overflow-y-scroll p-1">
+		@let castSectionList = this.$castSectionList() || [];
+		<ul class="list-group cast-section-list"
+		    [config]="castSectionListSortableOptions"
+		    [nxtSortablejs]="castSectionList">
+			@for (castSection of castSectionList; track castSection.castUid) {
+				<li class="list-group-item p-0 my-1 border-0">
+					<div class="card">
+						<div class="card-header m-0 p-1">
+							<div class="d-flex flex-row justify-content-between px-1">
+								<div>
+									<i class="fa fa-arrows handle fa-hover cursor-move"></i>
+								</div>
+								<div>
+									<i class="fa fa-times text-danger fa-hover cursor-pointer"
+									   (click)="action_remove_castSection(castSection);"></i>
+								</div>
+							</div>
+						</div>
+						<div class="card-body p-0">
+							<div class="text-center">
+								<img class="w-100"
+								     [src]="castSection.castImageSrc"/>
+							</div>
+						</div>
+						<div class="card-footer p-1">
+							<div style="white-space:nowrap;text-overflow: ellipsis;overflow:hidden;"
+							     [textContent]="castSection.castName||'未入力'"></div>
+						</div>
+					</div>
+				</li>
+			}
+		</ul>
+	</div>
 </div>
