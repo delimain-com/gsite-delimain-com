@@ -1,8 +1,10 @@
 @if ($isReady()) {
 	<div class="d-flex flex-row h-100">
-		<div class="card w-100 h-100 user-select-none p-0 m-0">
-			<div class="card-header rounded-0">
-				<strong>キャスト一覧</strong>
+		<div class="card w-100 h-100 user-select-none p-0 m-0 rounded-0">
+			<div class="card-header rounded-0 p-0">
+				<div class="p-1">
+					<strong>キャスト一覧</strong>
+				</div>
 			</div>
 			<div class="card-body p-1 m-0 overflow-y-scroll">
 				<div class="d-flex flex-column gap-1">
@@ -174,7 +176,7 @@
 			</div>
 		</div>
 		@if ($select_castSectionItem(); as select_castSectionItem; ) {
-			<div class="ddddd overflow-y-hidden"
+			<div class="h-100 overflow-y-hidden"
 			     [ngClass]="$viewSettings_castSectionClass()">
 				<app-cast-section-list [select_castSectionItem]="select_castSectionItem"
 				                       (actionClose)="$select_castSectionItem.set(undefined);"></app-cast-section-list>
