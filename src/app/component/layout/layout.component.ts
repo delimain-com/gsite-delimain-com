@@ -9,14 +9,16 @@ import SiteListComponent from "../page/site-list/site-list.component";
 import ElNotifyMessageComponent from "../el/el-notify-message/el-notify-message.component";
 import {NotifyMessageService} from "../../service/notify-message/notify-message.service";
 import {injectNavigationEnd} from "ngxtension/navigation-end";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
+	standalone: true,
 	selector: 'app-layout',
 	imports: [
 		RouterOutlet,
 		RouterLink,
 		SiteListComponent,
-		ElNotifyMessageComponent
+		ElNotifyMessageComponent,
 	],
 	templateUrl: './layout.component.html',
 	styleUrl: './layout.component.scss'
@@ -42,8 +44,8 @@ export default class LayoutComponent {
 		{path: 'castScheduleDatetimeList', label: 'スケジュール'},
 		{path: 'infoAdd', label: '新着追加'},
 		{path: 'infoList', label: '新着一覧'},
-		{path : 'eventAdd',label : 'イベント追加'},
-		{path : 'eventList',label : 'イベント一覧'}
+		{path: 'eventAdd', label: 'イベント追加'},
+		{path: 'eventList', label: 'イベント一覧'}
 	]);
 
 	public $domain: Signal<any> = injectQueryParams('domain');
@@ -52,11 +54,17 @@ export default class LayoutComponent {
 
 	public navigationEnd$ = injectNavigationEnd();
 
+	private modal: NgbModal = inject(NgbModal);
+
 	constructor() {
 		this.navigationEnd$
 			.pipe(
 				takeUntilDestroyed(this.#DestroyRef),
-				tap(() => this.notifyMessage.close())
+				tap(() => {
+					this.notifyMessage.close();
+					this.modal.dismissAll();
+					this.$isView.set(true);
+				})
 			)
 			.subscribe();
 		this.siteInfo.load()
@@ -70,8 +78,6 @@ export default class LayoutComponent {
 
 	action_reload(): void {
 		this.$isView.set(false);
-		this.notifyMessage.close();
-		setTimeout(() => this.$isView.set(true));
 	}
 
 	action_logout(): void {

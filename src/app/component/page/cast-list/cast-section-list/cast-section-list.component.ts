@@ -152,7 +152,7 @@ export default class CastSectionListComponent {
 
 	action_open_castSectionListSort(): void {
 		const modalRef: NgbModalRef = this.modalService.open(CastSectionListSortComponent, {
-			size: 'sm',
+			size: 'lg',
 			scrollable: true,
 			backdropClass: 'ngb-modal-backdrop',
 			windowClass: 'ngb-modal-window',

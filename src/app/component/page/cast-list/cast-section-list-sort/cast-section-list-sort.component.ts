@@ -6,6 +6,7 @@ import {NotifyMessageService} from "../../../../service/notify-message/notify-me
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {take, tap} from "rxjs";
 import {ApiService} from "../../../../service/api/api.service";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
 	selector: 'app-cast-section-list-sort',
@@ -15,13 +16,15 @@ import {ApiService} from "../../../../service/api/api.service";
 	],
 	templateUrl: './cast-section-list-sort.component.html',
 	styleUrl: './cast-section-list-sort.component.scss',
-	host : {class:'h-100'}
+	host: {class: 'h-100'}
 })
 export default class CastSectionListSortComponent {
 
 	#DestroyRef: DestroyRef = inject(DestroyRef);
 
 	private api: ApiService = inject(ApiService);
+
+	private activeModal: NgbActiveModal = inject(NgbActiveModal);
 
 	private notifyMessage: NotifyMessageService = inject(NotifyMessageService);
 
@@ -57,5 +60,7 @@ export default class CastSectionListSortComponent {
 		}
 	};
 
-	castSectionListChange = output();
+	action_close(): void {
+		this.activeModal.close();
+	}
 }
