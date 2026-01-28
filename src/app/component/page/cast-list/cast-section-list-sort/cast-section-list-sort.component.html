@@ -1,0 +1,14 @@
+@let castSectionList = $castSectionList() || [];
+<div class="d-flex flex-wrap h-100 overflow-y-scroll"
+     [nxtSortablejs]="castSectionList"
+     [config]="castSectionListSortableOptions"
+     style="min-height: 0;">
+	@for (castSection of castSectionList; track castSection.castUid) {
+		<div class="col-6 handle"
+		     style="cursor:move;">
+			<img [src]="castSection.castImageSrc"
+			     style="width:100%;"/>
+		</div>
+	}
+</div>
+	

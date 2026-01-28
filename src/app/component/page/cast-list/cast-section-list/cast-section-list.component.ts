@@ -1,15 +1,15 @@
-import {Component, computed, DestroyRef, effect, inject, input, output, Signal, signal, viewChild, WritableSignal} from '@angular/core';
-import {FormBuilder} from "@angular/forms";
+import {Component, computed, DestroyRef, effect, inject, input, output, Signal, signal, WritableSignal} from '@angular/core';
 import {Observable, take, tap} from "rxjs";
 import {ApiService} from "../../../../service/api/api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {JsonPipe} from "@angular/common";
 import {CastModel} from "../../../../model/cast.model";
 import {CastSectionModel} from "../../../../model/cast-section.model";
 import {UtilService} from "../../../../service/util/util.service";
 import {Options} from 'sortablejs';
 import {SortablejsModule} from "nxt-sortablejs";
 import {NotifyMessageService} from "../../../../service/notify-message/notify-message.service";
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import CastSectionListSortComponent from "../cast-section-list-sort/cast-section-list-sort.component";
 
 @Component({
 	selector: 'app-cast-section-list',
@@ -27,6 +27,8 @@ export default class CastSectionListComponent {
 	public util: UtilService = inject(UtilService);
 
 	private notifyMessage: NotifyMessageService = inject(NotifyMessageService);
+
+	private modalService: NgbModal = inject(NgbModal);
 
 	$select_castSectionItem = input.required<any>({alias: 'select_castSectionItem'});
 
@@ -146,6 +148,24 @@ export default class CastSectionListComponent {
 				take(1)
 			)
 			.subscribe();
+	}
+
+	action_open_castSectionListSort(): void {
+		const modalRef: NgbModalRef = this.modalService.open(CastSectionListSortComponent, {
+			size: 'sm',
+			scrollable: true,
+			backdropClass: 'ngb-modal-backdrop',
+			windowClass: 'ngb-modal-window',
+			// centered: true,               // ✅ これだけで縦方向センタリング
+		});
+		{
+			const castSectionListSortComponent: CastSectionListSortComponent = modalRef.componentInstance as CastSectionListSortComponent;
+			// castSectionListSortComponent.$select_castSectionItem = this.$select_castSectionItem;
+			// castSectionListSortComponent.$castSectionList.set(this.$castSectionList());
+			// castSectionListSortComponent.$select_castSectionItem.set(this.$select_castSectionItem());
+			castSectionListSortComponent.$castSectionList = this.$castSectionList;
+			castSectionListSortComponent.$select_castSectionItem.set(this.$select_castSectionItem());
+		}
 	}
 
 }
