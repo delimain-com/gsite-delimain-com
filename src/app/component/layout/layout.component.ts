@@ -63,7 +63,6 @@ export default class LayoutComponent {
 				tap(() => {
 					this.notifyMessage.close();
 					this.modal.dismissAll();
-					this.$isView.set(true);
 				})
 			)
 			.subscribe();
@@ -76,8 +75,16 @@ export default class LayoutComponent {
 			.subscribe();
 	}
 
+	action_menu(): void {
+		this.$isView.set(false);
+		setTimeout(() => {
+			this.$isView.set(true);
+		});
+	}
+
 	action_reload(): void {
 		this.$isView.set(false);
+		setTimeout(() => this.$isView.set(true), 13);
 	}
 
 	action_logout(): void {

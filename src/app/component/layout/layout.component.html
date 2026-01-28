@@ -21,7 +21,7 @@
 							<a class="list-group-item rounded-0 m-0"
 							   [routerLink]="[menu.path]"
 							   [queryParams]="{domain}"
-							   (click)="action_reload();"
+							   (click)="action_menu();"
 							   [textContent]="menu.label">
 							</a>
 						}
@@ -37,6 +37,8 @@
 				@if ($isView()) {
 					<app-el-notify-message></app-el-notify-message>
 					<router-outlet></router-outlet>
+				}@else{
+					<div>loading...</div>
 				}
 			</main>
 		</div>
