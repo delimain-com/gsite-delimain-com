@@ -1,7 +1,7 @@
 import {Component, DestroyRef, inject, Signal, signal, WritableSignal} from '@angular/core';
 import {RouteReuseStrategy, RouterLink, RouterOutlet} from "@angular/router";
 import {AuthService} from "../../service/auth/auth.service";
-import {take, tap} from "rxjs";
+import {forkJoin, merge, Subject, take, tap} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {SiteInfoService} from "../../service/site-info/site-info.service";
 import {injectQueryParams} from "ngxtension/inject-query-params";
@@ -53,16 +53,18 @@ export default class LayoutComponent {
 	public notifyMessage: NotifyMessageService = inject(NotifyMessageService);
 
 	public navigationEnd$ = injectNavigationEnd();
+	public reload$ = new Subject<void>();
 
 	private modal: NgbModal = inject(NgbModal);
 
 	constructor() {
-		this.navigationEnd$
+		merge(this.navigationEnd$, this.reload$)
 			.pipe(
 				takeUntilDestroyed(this.#DestroyRef),
 				tap(() => {
 					this.notifyMessage.close();
 					this.modal.dismissAll();
+					setTimeout(() => this.$isView.set(true));
 				})
 			)
 			.subscribe();
@@ -77,14 +79,11 @@ export default class LayoutComponent {
 
 	action_menu(): void {
 		this.$isView.set(false);
-		setTimeout(() => {
-			this.$isView.set(true);
-		});
 	}
 
 	action_reload(): void {
 		this.$isView.set(false);
-		setTimeout(() => this.$isView.set(true), 13);
+		this.reload$.next();
 	}
 
 	action_logout(): void {
