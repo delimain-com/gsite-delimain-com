@@ -60,16 +60,18 @@
 					<div class="card">
 						<div class="card-header p-0 px-1">設定</div>
 						<div class="card-body p-1">
-							<div class="input-group input-group-sm w-auto">
-								<div class="input-group-text">セクション(幅)</div>
-								<select class="form-select form-select-sm"
-								        [ngModel]="$viewSettings_castSectionClass()"
-								        (ngModelChange)="$viewSettings_castSectionClass.set($event);"
-								        style="width:5rem;">
-									@for (i of 6 | repeat: 1; track i) {
-										<option ngValue="col-{{i}}">{{ Math.floor(i / 12 * 100) }}%</option>
-									}
-								</select>
+							<div class="d-flex flex-row flex-wrap">
+								<div class="input-group input-group-sm w-auto">
+									<div class="input-group-text">セクション(幅)</div>
+									<select class="form-select form-select-sm"
+									        [ngModel]="$viewSettings_castSectionClass()"
+									        (ngModelChange)="$viewSettings_castSectionClass.set($event);"
+									        style="width:6rem;">
+										@for (i of 6 | repeat: 1; track i) {
+											<option ngValue="col-{{i}}">{{ Math.floor(i / 12 * 100) }}%</option>
+										}
+									</select>
+								</div>
 							</div>
 						</div>
 					</div>
