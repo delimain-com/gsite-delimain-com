@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, Signal, signal, viewChild, WritableSignal} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, Signal, signal, viewChild, WritableSignal} from '@angular/core';
 import {ApiService} from "../../../service/api/api.service";
 import {UtilService} from "../../../service/util/util.service";
 import {FormsModule} from "@angular/forms";
@@ -50,6 +50,11 @@ export default class CastListComponent {
 	public Math: Math = Math;
 
 	public $viewSettings_castSectionClass: WritableSignal<string> = injectLocalStorage('CastListComponent.$viewSettings_castSectionClass', {defaultValue: 'col-2'});
+	public $viewSettings_gridTemplateColumnsNumber: WritableSignal<number> = injectLocalStorage('CastListComponent.$viewSettings_gridTemplateColumnsNumber', {defaultValue: 5});
+	public $viewSettings_gridTemplateColumns = computed(() => {
+		const viewSettings_gridTemplateColumnsNumber = this.$viewSettings_gridTemplateColumnsNumber() || 5;
+		return `repeat(${viewSettings_gridTemplateColumnsNumber < 1 ? 5 : viewSettings_gridTemplateColumnsNumber},1fr)`;
+	});
 
 	public castListSortableOptions: Options = {
 		handle: '.handle',

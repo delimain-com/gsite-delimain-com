@@ -4,7 +4,7 @@ import {Observable, take, tap} from "rxjs";
 import {ApiService} from "../../../service/api/api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {SiteInfoService} from "../../../service/site-info/site-info.service";
-import {NgbNav, NgbNavContent, NgbNavItem, NgbNavLinkButton, NgbNavOutlet} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbModalRef, NgbNav, NgbNavContent, NgbNavItem, NgbNavLinkButton, NgbNavOutlet} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {UtilService} from "../../../service/util/util.service";
 import {ImageUtilService} from "../../../service/image-util/image-util.service";
@@ -13,6 +13,8 @@ import {Options} from "sortablejs";
 import {CdkDrag, CdkDragDrop, CdkDragEnter, CdkDragStart, CdkDropList, moveItemInArray} from "@angular/cdk/drag-drop";
 import CastImageComponent from "./cast-image/cast-image.component";
 import {NotifyMessageService} from "../../../service/notify-message/notify-message.service";
+import CastSectionListSortComponent from "../cast-list/cast-section-list-sort/cast-section-list-sort.component";
+import CastImageListSortComponent from "./cast-image-list-sort/cast-image-list-sort.component";
 
 @Component({
 	selector: 'app-cast-edit',
@@ -40,6 +42,8 @@ export default class CastEditComponent {
 	public notifyMessage: NotifyMessageService = inject(NotifyMessageService);
 
 	public changeDetectorRef: ChangeDetectorRef = inject(ChangeDetectorRef);
+
+	private modalService: NgbModal = inject(NgbModal);
 
 	public api: ApiService = inject(ApiService);
 
@@ -400,5 +404,20 @@ export default class CastEditComponent {
 
 	action_remove_castImage(castImageList: any, castImage: any): void {
 		this.util.remove(castImageList, castImage);
+	}
+
+	action_open_castImageListSort(castImageList: any): void {
+		const modalRef: NgbModalRef = this.modalService.open(CastImageListSortComponent, {
+			size: 'lg',
+			scrollable: true,
+			backdropClass: 'ngb-modal-backdrop',
+			windowClass: 'ngb-modal-window',
+			// centered: true,               // ✅ これだけで縦方向センタリング
+		});
+		{
+			const castImageListSortComponent: CastImageListSortComponent = modalRef.componentInstance as CastImageListSortComponent;
+			castImageListSortComponent.$castImageList.set(castImageList);
+			castImageListSortComponent.castImageList = castImageList;
+		}
 	}
 }

@@ -1,13 +1,16 @@
+@let castSectionList = this.$castSectionList() || [];
 <div class="card h-100 w-100 user-select-none rounded-0">
 	<div class="card-header p-0">
 		<div class="d-flex justify-content-between p-1">
 			<div class="d-flex gap-1">
 				<span [textContent]="$select_castSectionItem()?.label"></span>
-				<a href="javascript:void false;"
-				   class="small mt-auto"
-				   (click)="action_open_castSectionListSort();">
-					並べ替え
-				</a>
+				@if ((castSectionList?.length || 0) > 1) {
+					<a href="javascript:void false;"
+					   class="small mt-auto"
+					   (click)="action_open_castSectionListSort();">
+						並べ替え
+					</a>
+				}
 			</div>
 			<div>
 				<i class="fa fa-times text-danger fa-hover cursor-pointer"
@@ -16,7 +19,6 @@
 		</div>
 	</div>
 	<div class="card-body overflow-y-scroll p-1">
-		@let castSectionList = this.$castSectionList() || [];
 		<ul class="list-group cast-section-list"
 		    [config]="castSectionListSortableOptions"
 		    [nxtSortablejs]="castSectionList">

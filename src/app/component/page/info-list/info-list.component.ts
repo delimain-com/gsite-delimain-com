@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, computed, DestroyRef, effect, inject, signal, WritableSignal} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, DestroyRef, inject, signal, WritableSignal} from '@angular/core';
 import {Observable, Subject, switchMap, take, tap} from "rxjs";
 import {ApiService} from "../../../service/api/api.service";
 import {UtilService} from "../../../service/util/util.service";
@@ -19,7 +19,7 @@ import {injectQueryParams} from "ngxtension/inject-query-params";
 		RouterLink
 	],
 	templateUrl: './info-list.component.html',
-	styleUrl: './info-list.component.scss',
+	styleUrl: './info-list.component.scss'
 })
 export default class InfoListComponent {
 

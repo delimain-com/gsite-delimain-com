@@ -45,7 +45,9 @@ export default class LayoutComponent {
 		{path: 'infoAdd', label: '新着追加'},
 		{path: 'infoList', label: '新着一覧'},
 		{path: 'eventAdd', label: 'イベント追加'},
-		{path: 'eventList', label: 'イベント一覧'}
+		{path: 'eventList', label: 'イベント一覧'},
+		// {path: 'linkAdd', label: 'リンク追加'},
+		// {path: 'linkList', label: 'リンク一覧'},
 	]);
 
 	public $domain: Signal<any> = injectQueryParams('domain');

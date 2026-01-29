@@ -19,6 +19,9 @@ export const routes: Routes = [
 			{path: 'eventList', loadComponent: () => import('./component/page/event-list/event-list.component')},
 			{path: 'eventEdit', loadComponent: () => import('./component/page/event-edit/event-edit.component')},
 			{path: 'eventAdd', loadComponent: () => import('./component/page/event-add/event-add.component')},
+			{path: 'linkEdit', loadComponent: () => import('./component/page/link-edit/link-edit.component')},
+			{path: 'linkAdd', loadComponent: () => import('./component/page/link-add/link-add.component')},
+			{path: 'linkList', loadComponent: () => import('./component/page/link-list/link-list.component')},
 		]
 	}
 ];

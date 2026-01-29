@@ -1,0 +1,14 @@
+<div class="modal-header"></div>
+<div class="modal-body p-0">
+	@let castImageList = this.$castImageList() || [];
+	<div class="d-flex flex-wrap"
+	     [nxtSortablejs]="castImageList"
+	     [config]="castImageListSortableOptions">
+		@for (castImage of castImageList; track castImage.castUid; ) {
+			<div class="col-3 handle">
+				<img [src]="castImage.imageSrc"
+				     style="width:100%;"/>
+			</div>
+		}
+	</div>
+</div>
