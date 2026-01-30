@@ -7,8 +7,6 @@ import {Component} from '@angular/core';
 	styleUrl: './home.component.scss',
 })
 export default class HomeComponent {
-	public now: number = Date.now();
-
 	constructor() {
 	}
 }
